@@ -25,55 +25,82 @@ if (themeBtn) {
 // --- 1. INTERFAZ DINÁMICA (Modelos PK) ---
 const farmaSelect = document.getElementById('farma-select');
 const modeloSelect = document.getElementById('modelo-select');
+const grupoModelo = document.getElementById('grupo-modelo');
+const grupoLineal = document.getElementById('grupo-lineal');
 const grupoTalla = document.getElementById('grupo-talla');
 const grupoDemografia = document.getElementById('grupo-demografia');
 
-const modelos = {
+// Diccionario de modelos para TCI
+const modelosTCI = {
     propofol: [
         { id: 'marsh', nombre: 'Marsh (Cp)' },
         { id: 'schnider', nombre: 'Schnider (Ce)' },
         { id: 'eleveld', nombre: 'Eleveld (Amplio)' }
     ],
     remifentanilo: [
-        { id: 'minto', nombre: 'Minto (Ce)' }
+        { id: 'minto', nombre: 'Minto (Ce)' },
+        { id: 'eleveld_remi', nombre: 'Eleveld' }
+    ],
+    fentanilo: [
+        { id: 'shafer', nombre: 'Shafer (Cp)' },
+        { id: 'scott', nombre: 'Scott (Ce)' }
     ]
 };
 
-// Cargar modelos según el fármaco seleccionado
-function actualizarModelos() {
+function actualizarInterfazFarmaco() {
     const farma = farmaSelect.value;
-    modeloSelect.innerHTML = '';
     
-    modelos[farma].forEach(mod => {
-        const option = document.createElement('option');
-        option.value = mod.id;
-        option.innerText = mod.nombre;
-        modeloSelect.appendChild(option);
-    });
-    
-    ajustarCamposBiometricos();
+    // Si el fármaco está en la lista TCI
+    if (modelosTCI[farma]) {
+        grupoModelo.style.display = 'block';
+        grupoLineal.style.display = 'none';
+        
+        modeloSelect.innerHTML = '';
+        modelosTCI[farma].forEach(mod => {
+            const option = document.createElement('option');
+            option.value = mod.id;
+            option.innerText = mod.nombre;
+            modeloSelect.appendChild(option);
+        });
+        ajustarCamposBiometricos();
+        
+    } else {
+        // Si es una Infusión Lineal (Dexmedetomidina, etc.)
+        grupoModelo.style.display = 'none';
+        grupoLineal.style.display = 'block';
+        
+        // Las infusiones lineales solo requieren peso
+        grupoTalla.style.display = 'none';
+        grupoDemografia.style.display = 'none';
+        
+        // Ajustar unidad por defecto según el fármaco
+        const unidadSelect = document.getElementById('unidad-lineal');
+        if (farma === 'dexmedetomidina') unidadSelect.value = 'mcg_kg_h';
+        if (farma === 'rocuronio' || farma === 'vecuronio') unidadSelect.value = 'mcg_kg_min';
+        if (farma === 'tranexamico' || farma === 'midazolam') unidadSelect.value = 'mg_kg_h';
+        if (farma === 'magnesio') unidadSelect.value = 'mg_h';
+    }
 }
 
-// Mostrar/Ocultar campos según el modelo
 function ajustarCamposBiometricos() {
-    const modelo = modeloSelect.value;
+    // Solo aplica si estamos en un fármaco TCI
+    if (!modelosTCI[farmaSelect.value]) return;
     
-    if (modelo === 'marsh') {
-        // Marsh usa un compartimiento central proporcional al peso
+    const modelo = modeloSelect.value;
+    if (modelo === 'marsh' || modelo === 'shafer') {
         grupoTalla.style.display = 'none';
         grupoDemografia.style.display = 'none';
     } else {
-        // Schnider, Minto y Eleveld calculan masa magra (LBM) con talla, edad y sexo
         grupoTalla.style.display = 'block';
         grupoDemografia.style.display = 'flex';
     }
 }
 
-farmaSelect.addEventListener('change', actualizarModelos);
+farmaSelect.addEventListener('change', actualizarInterfazFarmaco);
 modeloSelect.addEventListener('change', ajustarCamposBiometricos);
 
-// Inicializar al abrir la pantalla
-actualizarModelos();
+// Inicializar
+actualizarInterfazFarmaco();
 
 // --- 2. CONFIGURACIÓN INICIAL DE LA GRÁFICA (VACÍA) ---
 const ctx = document.getElementById('graficaTiva').getContext('2d');
