@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIVACalc - HemoCalc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" href="icon.png">
+    <!-- Librería de Gráficos (Chart.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="calc-body">
+    <button id="theme-btn" class="theme-toggle">🌙</button>
+
+    <div class="calc-container">
+        <!-- Volver al menú maestro -->
+        <a href="index.html" style="display: inline-flex; align-items: center; padding: 8px 12px; margin-bottom: 20px; color: var(--text-main); background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            ⬅ Volver al menú
+        </a>
+        
+        <div class="calc-header">
+            <h2>💉 Panel TIVA</h2>
+            <p>Infusión Controlada por Objetivo (TCI)</p>
+        </div>
+
+        <div class="calc-grid" style="grid-template-columns: 1fr;">
+            
+            <!-- TARJETA 1: Configuración del Fármaco -->
+            <div class="calc-card input-section">
+                <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary-color);">1. Fármaco y Modelo</h3>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="farma-select">Fármaco</label>
+                        <select id="farma-select">
+                            <option value="propofol">Propofol (10 mg/ml)</option>
+                            <option value="remifentanilo">Remifentanilo (mcg/ml)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="modelo-select">Modelo PK</label>
+                        <select id="modelo-select">
+                            <!-- Se llena dinámicamente con JS -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 2: Datos Dinámicos del Paciente -->
+            <div class="calc-card input-section">
+                <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary-color);">2. Biometría</h3>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="tiva-peso">Peso (kg)</label>
+                        <input type="number" id="tiva-peso" inputmode="decimal" placeholder="Ej: 70">
+                    </div>
+                    <div class="input-group" id="grupo-talla">
+                        <label for="tiva-talla">Talla (cm)</label>
+                        <input type="number" id="tiva-talla" inputmode="decimal" placeholder="Ej: 170">
+                    </div>
+                </div>
+                <div class="input-row" id="grupo-demografia">
+                    <div class="input-group">
+                        <label for="tiva-edad">Edad (Años)</label>
+                        <input type="number" id="tiva-edad" inputmode="numeric" placeholder="Ej: 45">
+                    </div>
+                    <div class="input-group">
+                        <label for="tiva-sexo">Género</label>
+                        <select id="tiva-sexo">
+                            <option value="m">Masculino</option>
+                            <option value="f">Femenino</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 3: Gráfica PK/PD (Simulador TCI) -->
+            <div class="calc-card result-section" style="padding-bottom: 30px;">
+                <h3>Simulador Plasmático / Efecto</h3>
+                <!-- Aquí vivirá la curva de concentración -->
+                <div style="position: relative; height: 300px; width: 100%; margin-top: 15px;">
+                    <canvas id="graficaTiva"></canvas>
+                </div>
+                <button id="btn-simular" class="btn-primary" style="margin-top: 20px;">▶ Iniciar Simulación</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="tiva.js"></script>
+</body>
+</html>

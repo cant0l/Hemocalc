@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HemoCalc - Calculadora</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="calc-body">
+    <!-- Botón de Modo Oscuro -->
+    <button id="theme-btn" class="theme-toggle">🌙</button>
+
+    <div class="calc-container">
+        <!-- Botón de Volver al Inicio -->
+<!-- Botón de Volver al Inicio -->
+        <a href="index.html" style="display: inline-flex; align-items: center; padding: 8px 12px; margin-bottom: 20px; color: var(--text-main); background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            ⬅ Volver al menú
+        </a>        
+        <div class="calc-header">
+            <h2>🩸 Panel Intraquirúrgico</h2>
+            <p>Calculadora de Líquidos y Sangrado</p>
+        </div>
+
+        <div class="calc-grid">
+            <div class="calc-card input-section">
+                
+           <!-- NUEVO: Botón Desplegable de Identificación (Irrompible) -->
+                <button type="button" id="btn-toggle-id" onclick="toggleFicha()" style="width: 100%; padding: 15px; background-color: var(--bg-color); border: 1px dashed var(--primary-color); color: var(--primary-color); border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;">
+                    <span>👤 Ficha del Paciente (Opcional)</span>
+                    <span id="toggle-icon">➕</span>
+                </button>
+                
+                <!-- Contenedor de Identificación (Oculto por defecto) -->
+                <div id="seccion-identificacion" style="display: none;">
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label for="id-nombre">Nombre del Paciente</label>
+                        <input type="text" id="id-nombre" placeholder="Nombre completo">
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="id-cedula">Cédula</label>
+                            <input type="text" id="id-cedula" inputmode="numeric" placeholder="N° de Cédula">
+                        </div>
+                        <div class="input-group">
+                            <label for="id-historia">Historia Clínica</label>
+                            <input type="text" id="id-historia" inputmode="numeric" placeholder="N° de Historia">
+                        </div>
+                    </div>
+
+                    <div class="input-row" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label for="id-edad">Edad</label>
+                            <input type="number" id="id-edad" inputmode="decimal" placeholder="Años">
+                        </div>
+                        <div class="input-group">
+                            <label for="id-servicio">Servicio Quirúrgico</label>
+                            <input type="text" id="id-servicio" placeholder="Ej: Traumatología...">
+                        </div>
+                    </div>
+
+                    <div class="input-row" style="margin-top: 15px;">
+                        <div class="input-group">
+                            <label for="id-asa">Clasificación ASA</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="id-asa" style="flex: 1;">
+                                    <option value="-">Seleccionar...</option>
+                                    <option value="ASA I">ASA I</option>
+                                    <option value="ASA II">ASA II</option>
+                                    <option value="ASA III">ASA III</option>
+                                    <option value="ASA IV">ASA IV</option>
+                                    <option value="ASA V">ASA V</option>
+                                </select>
+                                <label style="display: flex; align-items: center; gap: 5px; margin-bottom: 0; cursor: pointer; font-weight: 500; font-size: 0.9rem;">
+                                    <input type="checkbox" id="id-asa-e" style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
+                                    (E)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="id-sangre">Tipo de Sangre</label>
+                            <select id="id-sangre">
+                                <option value="-">Seleccionar...</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 15px;">
+                        <label for="id-dx">Diagnóstico</label>
+                        <input type="text" id="id-dx" placeholder="Diagnóstico de ingreso">
+                    </div>
+
+                    <div class="input-group" style="margin-top: 15px; margin-bottom: 25px;">
+                        <label for="id-plan">Plan / Procedimiento</label>
+                        <input type="text" id="id-plan" placeholder="Procedimiento a realizar">
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary-color); border-top: 1px solid var(--border-color); padding-top: 20px;">Parámetros Fisiológicos</h3>
+                
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="peso">Peso (kg)</label>
+                        <input type="number" id="peso" inputmode="decimal" placeholder="Ej: 70" min="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="tipo-paciente">Tipo de Paciente</label>
+                        <select id="tipo-paciente">
+                            <optgroup label="Adultos (Medios y Geriátricos)">
+                                <option value="75">Masculino Joven/Medio (75 ml/kg)</option>
+                                <option value="65">Femenino Joven/Medio (65 ml/kg)</option>
+                                <option value="65">Anciano Masculino >65a (65 ml/kg)</option>
+                                <option value="55">Anciana Femenina >65a (55 ml/kg)</option>
+                                <option value="55">Paciente con Obesidad (55 ml/kg)</option>
+                            </optgroup>
+                            <optgroup label="Obstetricia">
+                                <option value="90">Embarazada a término (90 ml/kg)</option>
+                            </optgroup>
+                            <optgroup label="Pediatría">
+                                <option value="95">Prematuro (95 ml/kg)</option>
+                                <option value="85">Neonato a término (85 ml/kg)</option>
+                                <option value="80">Lactante < 1 año (80 ml/kg)</option>
+                                <option value="75">Niño > 1 año (75 ml/kg)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="hto-inicial">Hto Inicial (%)</label>
+                        <input type="number" id="hto-inicial" inputmode="decimal" placeholder="Ej: 42" min="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="hto-minimo">Hto Mínimo (%)</label>
+                        <input type="number" id="hto-minimo" inputmode="decimal" placeholder="Ej: 30" min="1">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="trauma">Trauma Quirúrgico</label>
+                        <select id="trauma">
+                            <option value="2">Leve (2 ml/kg)</option>
+                            <option value="4">Moderado (4 ml/kg)</option>
+                            <option value="6">Severo (6 ml/kg)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="ayuno">Horas de Ayuno</label>
+                        <input type="number" id="ayuno" inputmode="decimal" placeholder="Ej: 8" min="0">
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem; color: var(--primary-color); border-top: 1px solid var(--border-color); padding-top: 20px;">Balance Hídrico</h3>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="vol-orina">Orina Total (ml)</label>
+                        <input type="number" id="vol-orina" inputmode="decimal" placeholder="Ej: 200" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="tiempo-orina">Tiempo (horas)</label>
+                        <input type="number" id="tiempo-orina" inputmode="decimal" placeholder="Ej: 2" min="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="calc-card result-section">
+                <h3>Resultados (Automáticos)</h3>
+                
+                <div class="result-item"><span>Volemia (VSE)</span><strong id="res-volemia">0 ml</strong></div>
+                <div class="result-item highlight"><span>Sangrado Máx. Permisible</span><strong id="res-sangrado">0 ml</strong></div>
+                <div class="result-item"><span>Mantenimiento (4-2-1)</span><strong id="res-mantenimiento">0 ml/hr</strong></div>
+                <div class="result-item"><span>Pérdidas Insensibles</span><strong id="res-insensibles">0 ml/hr</strong></div>
+                <div class="result-item"><span>Déficit por Ayuno</span><strong id="res-ayuno">0 ml</strong></div>
+                <div class="result-item"><span>Gasto Urinario</span><strong id="res-diuresis">0 ml/kg/hr</strong></div>
+
+                <button id="btn-cuantificar" class="btn-primary" style="margin-top: 20px; background-color: #dc2626;">🩸 Cuantificar Sangrado Actual</button>
+                <button id="btn-copiar" class="btn-primary" style="margin-top: 10px; background-color: #0f172a;">📋 Copiar y Guardar Resumen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL (Ventana de Cuantificación) -->
+    <div id="modal-sangrado" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3>Cuantificación en Tiempo Real</h3>
+            <div class="modal-grid">
+                <div class="modal-section">
+                    <h4>Gravimetría (Compresas)</h4>
+                    <div class="input-group">
+                        <label>Total Manchadas (g)</label>
+                        <input type="number" id="peso-manchadas" inputmode="decimal" placeholder="Ej: 300">
+                    </div>
+                    <div class="input-group">
+                        <label>Total Secas (g)</label>
+                        <input type="number" id="peso-secas" inputmode="decimal" placeholder="Ej: 50">
+                        <small style="font-size: 0.75rem; color: var(--text-muted);">*1g = 1ml de sangre</small>
+                    </div>
+                </div>
+                <div class="modal-section">
+                    <h4>Aspirador</h4>
+                    <div class="input-group">
+                        <label>Total Frasco (ml)</label>
+                        <input type="number" id="vol-frasco" inputmode="decimal" placeholder="Ej: 800">
+                    </div>
+                    <div class="input-group">
+                        <label>Lavado (ml)</label>
+                        <input type="number" id="vol-lavado" inputmode="decimal" placeholder="Ej: 500">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-result"><span>Pérdida Actual:</span><strong id="sangrado-actual">0 ml</strong></div>
+            
+            <!-- Reposición Inteligente -->
+            <div style="margin-top: 15px; padding: 15px; background-color: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                <h4 style="margin-bottom: 10px; color: var(--text-main); font-size: 0.9rem;">Meta de Reposición Sugerida:</h4>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>💧 Cristaloides (3:1)</span><strong id="meta-cristaloides" style="color: #2563eb;">0 ml</strong></div>
+                <!-- Fila oculta de Sangre -->
+                <div id="meta-sangre-row" style="display: none; justify-content: space-between; margin-bottom: 15px;"><span>🩸 Sangre / Coloides (1:1)</span><strong id="meta-coloides" style="color: #dc2626;">0 ml</strong></div>
+                
+                <h4 style="margin-bottom: 10px; color: var(--text-main); font-size: 0.9rem; border-top: 1px solid var(--border-color); padding-top: 10px;">Líquidos Administrados:</h4>
+                <div class="input-row">
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <input type="number" id="cristaloides-pasados" inputmode="decimal" placeholder="Cristaloides (ml)">
+                    </div>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <input type="number" id="coloides-pasados" inputmode="decimal" placeholder="Sangre/Coloides (ml)">
+                    </div>
+                </div>
+
+                <div style="background-color: rgba(217, 119, 6, 0.1); padding: 10px; border-radius: 5px; border: 1px solid #fcd34d;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;"><span>💧 Falta (Cristaloide):</span><strong id="falta-cristaloides" style="color: #d97706;">0 ml</strong></div>
+                    <!-- Fila oculta de falta Sangre -->
+                    <div id="falta-sangre-row" style="display: none; justify-content: space-between; font-size: 0.9rem; margin-top: 5px;"><span>🩸 Falta (Sangre/Coloide):</span><strong id="falta-coloides" style="color: #dc2626;">0 ml</strong></div>
+                </div>
+            </div>
+            <div id="alerta-transfusion" class="alerta oculta">⚠️ El sangrado alcanzó el 80% del límite permisible.</div>
+        </div>
+    </div>
+
+    <script src="calculadora.js"></script>
+</body>
+</html>

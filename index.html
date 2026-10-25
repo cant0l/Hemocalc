@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HemoCalc - Menú Principal</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="calc-body">
+    <button id="theme-btn" class="theme-toggle">🌙</button>
+
+    <div class="calc-container" style="max-width: 600px;">
+        <div class="calc-header">
+            <div class="logo" style="font-size: 4rem; margin-bottom: 10px;">🏥</div>
+            <h2>Bienvenido, Dr. Arias</h2>
+            <p>Seleccione una acción para continuar</p>
+        </div>
+
+        <button onclick="nuevoPaciente()" class="btn-primary" style="font-size: 1.2rem; padding: 20px; background-color: #16a34a; margin-bottom: 30px;">
+            ➕ Registrar Nuevo Paciente
+            <a href="tiva.html" class="btn-primary" style="display: block; text-align: center; text-decoration: none; margin-top: 15px; background-color: #6366f1;">
+    💉 Bombas TIVA / Analgesia
+</a>
+        </button>
+
+        <div class="calc-card">
+            <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">🕒 Últimos 5 Pacientes Evaluados</h3>
+            
+            <div id="lista-historial">
+                <!-- Aquí aparecerán los pacientes mágicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lógica del modo oscuro
+        const themeBtn = document.getElementById('theme-btn');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') { document.body.setAttribute('data-theme', 'dark'); themeBtn.innerText = '☀️'; }
+        themeBtn.addEventListener('click', () => {
+            let theme = document.body.getAttribute('data-theme');
+            if (theme === 'dark') { document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); themeBtn.innerText = '🌙'; } 
+            else { document.body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); themeBtn.innerText = '☀️'; }
+        });
+
+        // --- FUNCIONES DEL HISTORIAL ---
+        const listaHistorial = document.getElementById('lista-historial');
+        const pacientesGuardados = JSON.parse(localStorage.getItem('historialPacientes')) || [];
+
+        // Función para empezar de cero
+        function nuevoPaciente() {
+            localStorage.removeItem('pacienteActivoId'); // Borra la memoria temporal
+            window.location.href = 'calculadora.html';
+        }
+
+        // Función para abrir un paciente viejo
+        function abrirPaciente(id) {
+            localStorage.setItem('pacienteActivoId', id); // Guarda el ID que queremos editar
+            window.location.href = 'calculadora.html';
+        }
+
+        // Renderizar la lista
+        if (pacientesGuardados.length === 0) {
+            listaHistorial.innerHTML = "<p style='text-align:center; color:gray;'>No hay pacientes registrados aún.</p>";
+        } else {
+            pacientesGuardados.forEach(paciente => {
+                // Le agregamos el 'onclick="abrirPaciente()"' y el cursor pointer
+                listaHistorial.innerHTML += `
+                    <div onclick="abrirPaciente(${paciente.id})" style="background-color: var(--bg-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); cursor: pointer;">
+                        <strong style="color: var(--primary-color); display:block;">${paciente.nombre}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Historia: ${paciente.historia} | Sangrado: ${paciente.sangrado} ml</span><br>
+                        <span style="font-size: 0.8rem; color: gray;">Evaluado el: ${paciente.fecha}</span>
+                    </div>
+                `;
+            });
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+            .then(() => console.log('App lista para funcionar sin internet'));
+        }
+    </script>
+</body>
+</html>
