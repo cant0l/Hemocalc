@@ -30,21 +30,44 @@
             <div class="calc-card input-section">
                 <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary-color);">1. Fármaco y Modelo</h3>
                 <div class="input-row">
-                    <div class="input-group">
+                 <div class="input-group">
                         <label for="farma-select">Fármaco</label>
                         <select id="farma-select">
-                            <option value="propofol">Propofol (10 mg/ml)</option>
-                            <option value="remifentanilo">Remifentanilo (mcg/ml)</option>
+                            <optgroup label="TCI (Modelos PK/PD)">
+                                <option value="propofol">Propofol (10 mg/ml)</option>
+                                <option value="remifentanilo">Remifentanilo</option>
+                                <option value="fentanilo">Fentanilo</option>
+                            </optgroup>
+                            <optgroup label="Infusiones Lineales">
+                                <option value="dexmedetomidina">Dexmedetomidina</option>
+                                <option value="midazolam">Midazolam</option>
+                                <option value="rocuronio">Rocuronio</option>
+                                <option value="vecuronio">Vecuronio</option>
+                                <option value="tranexamico">Ácido Tranexámico</option>
+                                <option value="magnesio">Sulfato de Magnesio</option>
+                            </optgroup>
                         </select>
                     </div>
-                    <div class="input-group">
+                    
+                    <!-- Este selector de modelo solo se mostrará para fármacos TCI -->
+                    <div class="input-group" id="grupo-modelo">
                         <label for="modelo-select">Modelo PK</label>
-                        <select id="modelo-select">
-                            <!-- Se llena dinámicamente con JS -->
-                        </select>
+                        <select id="modelo-select"></select>
                     </div>
-                </div>
-            </div>
+
+                    <!-- Estos campos solo se mostrarán para Infusiones Lineales -->
+                    <div class="input-group" id="grupo-lineal" style="display: none;">
+                        <label for="dosis-lineal">Dosis Objetivo</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="dosis-lineal" inputmode="decimal" placeholder="Ej: 0.5" style="flex: 1;">
+                            <select id="unidad-lineal" style="flex: 1;">
+                                <option value="mcg_kg_h">mcg/kg/h</option>
+                                <option value="mcg_kg_min">mcg/kg/min</option>
+                                <option value="mg_kg_h">mg/kg/h</option>
+                                <option value="mg_h">mg/h</option>
+                            </select>
+                        </div>
+                    </div>
 
             <!-- TARJETA 2: Datos Dinámicos del Paciente -->
             <div class="calc-card input-section">
