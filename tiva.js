@@ -146,7 +146,71 @@ let tivaChart = new Chart(ctx, {
         }
     }
 });
+// --- 3. MOTOR DE CÁLCULO: INFUSIONES LINEALES ---
+const inputDosisLineal = document.getElementById('dosis-lineal');
+const selectUnidadLineal = document.getElementById('unidad-lineal');
+const inputDilucionDroga = document.getElementById('dilucion-droga');
+const inputDilucionVolumen = document.getElementById('dilucion-volumen');
+const inputPeso = document.getElementById('tiva-peso');
+const resVelocidad = document.getElementById('res-velocidad');
 
+const grupoDilucion = document.getElementById('grupo-dilucion');
+const tarjetaResultadoLineal = document.getElementById('tarjeta-resultado-lineal');
+const tarjetaGrafica = document.querySelector('.result-section'); // La tarjeta de la gráfica TCI
+
+// Actualizamos la función de la interfaz para mostrar/ocultar los nuevos bloques
+const originalActualizarInterfaz = actualizarInterfazFarmaco;
+actualizarInterfazFarmaco = function() {
+    originalActualizarInterfaz();
+    const farma = farmaSelect.value;
+    
+    if (modelosTCI[farma]) {
+        grupoDilucion.style.display = 'none';
+        tarjetaResultadoLineal.style.display = 'none';
+        tarjetaGrafica.style.display = 'block'; // Muestra la gráfica
+    } else {
+        grupoDilucion.style.display = 'flex';
+        tarjetaResultadoLineal.style.display = 'block';
+        tarjetaGrafica.style.display = 'none'; // Oculta la gráfica
+        calcularInfusionLineal(); // Recalcula al cambiar de fármaco
+    }
+};
+
+function calcularInfusionLineal() {
+    const dosis = parseFloat(inputDosisLineal.value) || 0;
+    const peso = parseFloat(inputPeso.value) || 0;
+    const drogaTotal = parseFloat(inputDilucionDroga.value) || 0;
+    const volumenTotal = parseFloat(inputDilucionVolumen.value) || 0;
+    const unidad = selectUnidadLineal.value;
+
+    if (dosis > 0 && drogaTotal > 0 && volumenTotal > 0) {
+        // 1. Calcular concentración de la jeringa (droga por cada 1 ml)
+        const concentracion = drogaTotal / volumenTotal; 
+        
+        // 2. Calcular dosis total requerida por HORA
+        let dosisPorHora = 0;
+        
+        if (unidad === 'mcg_kg_h' || unidad === 'mg_kg_h') {
+            dosisPorHora = dosis * peso;
+        } else if (unidad === 'mcg_kg_min') {
+            dosisPorHora = dosis * peso * 60;
+        } else if (unidad === 'mg_h') {
+            dosisPorHora = dosis; // No depende del peso
+        }
+
+        // 3. Calcular velocidad en ml/hr
+        const velocidadMlHr = dosisPorHora / concentracion;
+        
+        resVelocidad.innerText = `${velocidadMlHr.toFixed(1)} ml/hr`;
+    } else {
+        resVelocidad.innerText = "0.0 ml/hr";
+    }
+}
+
+// Escuchar cambios en los inputs para recalcular en tiempo real
+[inputDosisLineal, selectUnidadLineal, inputDilucionDroga, inputDilucionVolumen, inputPeso].forEach(input => {
+    if(input) input.addEventListener('input', calcularInfusionLineal);
+});
 // Botón de prueba para ver la animación
 document.getElementById('btn-simular').addEventListener('click', () => {
     alert("Próximo paso: Integrar las ecuaciones de volumen de distribución (V1, V2, V3) y aclaramiento (k10, k12...) para dibujar las curvas reales.");
