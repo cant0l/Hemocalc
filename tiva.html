@@ -20,17 +20,18 @@
         </a>
         
         <div class="calc-header">
-            <h2>💉 Panel TIVA</h2>
-            <p>Infusión Controlada por Objetivo (TCI)</p>
+            <h2>💉 Panel de Infusiones</h2>
+            <p>TCI y Bombas Lineales</p>
         </div>
 
         <div class="calc-grid" style="grid-template-columns: 1fr;">
             
             <!-- TARJETA 1: Configuración del Fármaco -->
             <div class="calc-card input-section">
-                <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary-color);">1. Fármaco y Modelo</h3>
+                <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary-color);">1. Fármaco y Dilución</h3>
+                
                 <div class="input-row">
-                 <div class="input-group">
+                    <div class="input-group">
                         <label for="farma-select">Fármaco</label>
                         <select id="farma-select">
                             <optgroup label="TCI (Modelos PK/PD)">
@@ -49,43 +50,39 @@
                         </select>
                     </div>
                     
-                    <!-- Este selector de modelo solo se mostrará para fármacos TCI -->
+                    <!-- Selector de modelo (Solo TCI) -->
                     <div class="input-group" id="grupo-modelo">
                         <label for="modelo-select">Modelo PK</label>
                         <select id="modelo-select"></select>
                     </div>
+                </div>
 
-                    <!-- Estos campos solo se mostrarán para Infusiones Lineales -->
-                    <div class="input-group" id="grupo-lineal" style="display: none;">
-                        <!-- Campos para la dilución de la jeringa -->
-                    <div class="input-row" id="grupo-dilucion" style="display: none; margin-top: 15px;">
-                        <div class="input-group">
-                            <label>Droga Total en Jeringa</label>
-                            <input type="number" id="dilucion-droga" inputmode="decimal" placeholder="Ej: 200 (mcg)">
-                        </div>
-                        <div class="input-group">
-                            <label>Volumen Total (ml)</label>
-                            <input type="number" id="dilucion-volumen" inputmode="decimal" placeholder="Ej: 50">
-                        </div>
+                <!-- Dosis Objetivo (Solo Lineales) -->
+                <div class="input-group" id="grupo-lineal" style="display: none; margin-top: 15px;">
+                    <label for="dosis-lineal">Dosis Objetivo</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="dosis-lineal" inputmode="decimal" placeholder="Ej: 0.5" style="flex: 1;">
+                        <select id="unidad-lineal" style="flex: 1;">
+                            <option value="mcg_kg_h">mcg/kg/h</option>
+                            <option value="mcg_kg_min">mcg/kg/min</option>
+                            <option value="mg_kg_h">mg/kg/h</option>
+                            <option value="mg_h">mg/h</option>
+                        </select>
                     </div>
-            </div>
+                </div>
 
-            <!-- TARJETA EXTRA: Resultado de Infusión Lineal -->
-            <div class="calc-card result-section" id="tarjeta-resultado-lineal" style="display: none; margin-bottom: 20px;">
-                <h3 style="color: var(--text-main);">Velocidad de Infusión</h3>
-                <div id="res-velocidad" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); margin: 10px 0;">0.0 ml/hr</div>
-            </div>
-                        <label for="dosis-lineal">Dosis Objetivo</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="number" id="dosis-lineal" inputmode="decimal" placeholder="Ej: 0.5" style="flex: 1;">
-                            <select id="unidad-lineal" style="flex: 1;">
-                                <option value="mcg_kg_h">mcg/kg/h</option>
-                                <option value="mcg_kg_min">mcg/kg/min</option>
-                                <option value="mg_kg_h">mg/kg/h</option>
-                                <option value="mg_h">mg/h</option>
-                            </select>
-                        </div>
+                <!-- Dilución de la jeringa (Solo Lineales) -->
+                <div class="input-row" id="grupo-dilucion" style="display: none; margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Droga Total (mg o mcg)</label>
+                        <input type="number" id="dilucion-droga" inputmode="decimal" placeholder="Ej: 200">
                     </div>
+                    <div class="input-group">
+                        <label>Volumen Total (ml)</label>
+                        <input type="number" id="dilucion-volumen" inputmode="decimal" placeholder="Ej: 50">
+                    </div>
+                </div>
+            </div>
 
             <!-- TARJETA 2: Datos Dinámicos del Paciente -->
             <div class="calc-card input-section">
@@ -115,10 +112,15 @@
                 </div>
             </div>
 
+            <!-- TARJETA EXTRA: Resultado de Infusión Lineal -->
+            <div class="calc-card result-section" id="tarjeta-resultado-lineal" style="display: none; margin-bottom: 20px;">
+                <h3 style="color: var(--text-main);">Velocidad de Infusión</h3>
+                <div id="res-velocidad" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); margin: 10px 0;">0.0 ml/hr</div>
+            </div>
+
             <!-- TARJETA 3: Gráfica PK/PD (Simulador TCI) -->
-            <div class="calc-card result-section" style="padding-bottom: 30px;">
+            <div class="calc-card result-section" id="tarjeta-grafica" style="padding-bottom: 30px;">
                 <h3>Simulador Plasmático / Efecto</h3>
-                <!-- Aquí vivirá la curva de concentración -->
                 <div style="position: relative; height: 300px; width: 100%; margin-top: 15px;">
                     <canvas id="graficaTiva"></canvas>
                 </div>
