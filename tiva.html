@@ -57,6 +57,24 @@
 
                     <!-- Estos campos solo se mostrarán para Infusiones Lineales -->
                     <div class="input-group" id="grupo-lineal" style="display: none;">
+                        <!-- Campos para la dilución de la jeringa -->
+                    <div class="input-row" id="grupo-dilucion" style="display: none; margin-top: 15px;">
+                        <div class="input-group">
+                            <label>Droga Total en Jeringa</label>
+                            <input type="number" id="dilucion-droga" inputmode="decimal" placeholder="Ej: 200 (mcg)">
+                        </div>
+                        <div class="input-group">
+                            <label>Volumen Total (ml)</label>
+                            <input type="number" id="dilucion-volumen" inputmode="decimal" placeholder="Ej: 50">
+                        </div>
+                    </div>
+            </div>
+
+            <!-- TARJETA EXTRA: Resultado de Infusión Lineal -->
+            <div class="calc-card result-section" id="tarjeta-resultado-lineal" style="display: none; margin-bottom: 20px;">
+                <h3 style="color: var(--text-main);">Velocidad de Infusión</h3>
+                <div id="res-velocidad" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); margin: 10px 0;">0.0 ml/hr</div>
+            </div>
                         <label for="dosis-lineal">Dosis Objetivo</label>
                         <div style="display: flex; gap: 10px;">
                             <input type="number" id="dosis-lineal" inputmode="decimal" placeholder="Ej: 0.5" style="flex: 1;">
