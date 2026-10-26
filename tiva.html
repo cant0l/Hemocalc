@@ -130,17 +130,32 @@
                 <div id="res-velocidad" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); margin: 10px 0;">0.0 ml/hr</div>
             </div>
 
-<!-- TARJETA 3: Gráfica PK/PD (Simulador TCI) -->
+<!-- TARJETA 3: Monitor TCI en Vivo -->
             <div class="calc-card result-section" id="tarjeta-grafica" style="padding-bottom: 30px;">
-                <h3>Simulador Plasmático / Efecto</h3>
+                <h3>Monitor Farmacocinético</h3>
                 
-                <!-- Caja de Resultados TCI (Oculta por defecto) -->
-                <div id="res-tci-container" style="display: none; margin-top: 15px; padding: 15px; border-radius: 8px; background-color: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-color); text-align: center;">
-                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Bolo de Inducción</div>
-                    <div id="res-tci-bolo" style="font-size: 1.8rem; font-weight: 700; color: #ef4444; margin-bottom: 15px;">0.0 mg</div>
+                <!-- Panel Quirúrgico En Vivo (Oculto por defecto) -->
+                <div id="live-dashboard" style="display: none; margin-top: 15px; padding: 15px; border-radius: 8px; background-color: var(--bg-color); border: 2px solid var(--primary-color); text-align: center;">
                     
-                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Mantenimiento Continuo</div>
-                    <div id="res-tci-mant" style="font-size: 1.8rem; font-weight: 700; color: #3b82f6;">0.0 ml/hr</div>
+                    <!-- Cronómetro Quirúrgico -->
+                    <div id="tiva-timer" style="font-size: 2.5rem; font-family: monospace; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">00:00:00</div>
+                    
+                    <!-- Banner de Estado / Alertas -->
+                    <div id="tiva-status" style="display: inline-block; padding: 5px 15px; border-radius: 20px; background-color: #22c55e; color: white; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;">
+                        🟢 Infusión Iniciada
+                    </div>
+
+                    <!-- Resultados de Bomba -->
+                    <div style="display: flex; justify-content: space-around; margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Bolo Inicial</div>
+                            <div id="res-tci-bolo" style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">0.0 mg</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Bomba Mant.</div>
+                            <div id="res-tci-mant" style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">0.0 ml/hr</div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Lienzo de la gráfica -->
@@ -148,9 +163,12 @@
                     <canvas id="graficaTiva"></canvas>
                 </div>
                 
-                <button id="btn-simular" class="btn-primary" style="margin-top: 20px;">▶ Iniciar Simulación</button>
+                <!-- Botones de Acción -->
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="btn-simular" class="btn-primary" style="flex: 1;">▶ Iniciar Caso</button>
+                    <button id="btn-detener" class="btn-primary" style="flex: 1; display: none; background-color: #ef4444;">⏹ Detener Caso</button>
+                </div>
             </div>
-
         </div>
     </div>
 
