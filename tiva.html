@@ -56,7 +56,19 @@
                         <select id="modelo-select"></select>
                     </div>
                 </div>
-
+<!-- Target TCI (Solo TCI) -->
+                    <div class="input-row" id="grupo-target-tci" style="display: none; margin-top: 15px;">
+                        <div class="input-group">
+                            <label>Target Objetivo (µg/ml)</label>
+                            <input type="number" id="target-tci" inputmode="decimal" placeholder="Ej: 3.0">
+                        </div>
+                        <div class="input-group">
+                            <label>Modo Target</label>
+                            <select id="modo-target">
+                                <option value="cp">Plasma (Cp)</option>
+                            </select>
+                        </div>
+                    </div>
                 <!-- Dosis Objetivo (Solo Lineales) -->
                 <div class="input-group" id="grupo-lineal" style="display: none; margin-top: 15px;">
                     <label for="dosis-lineal">Dosis Objetivo</label>
