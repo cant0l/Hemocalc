@@ -180,8 +180,29 @@ let tivaChart = new Chart(ctx, {
     }
 });
 
-// --- 6. MOTOR FARMACOCINÉTICO (PK/PD) ---
-document.getElementById('btn-simular').addEventListener('click', () => {
+// --- 6. MOTOR FARMACOCINÉTICO Y MONITOR EN VIVO ---
+const liveDashboard = document.getElementById('live-dashboard');
+const btnSimular = document.getElementById('btn-simular');
+const btnDetener = document.getElementById('btn-detener');
+const tivaTimer = document.getElementById('tiva-timer');
+const tivaStatus = document.getElementById('tiva-status');
+const resTciBolo = document.getElementById('res-tci-bolo');
+const resTciMant = document.getElementById('res-tci-mant');
+
+let timerInterval;
+let segundosTranscurridos = 0;
+let isInfusing = false;
+
+// Función para dar formato 00:00:00 al reloj
+function formatearTiempo(totalSegundos) {
+    const horas = Math.floor(totalSegundos / 3600);
+    const minutos = Math.floor((totalSegundos % 3600) / 60);
+    const segundos = totalSegundos % 60;
+    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+}
+
+// Iniciar el Monitor En Vivo
+btnSimular.addEventListener('click', () => {
     const farma = farmaSelect.value;
     const modelo = modeloSelect.value;
     const peso = parseFloat(inputPeso.value);
@@ -194,70 +215,74 @@ document.getElementById('btn-simular').addEventListener('click', () => {
     }
 
     if (farma === 'propofol' && modelo === 'marsh') {
-        // Constantes Marsh
+        // --- 1. MATEMÁTICA ESTÁTICA (Inicial) ---
         const v1 = 0.228 * peso;
-        const v2 = 0.463 * peso;
-        const v3 = 2.893 * peso;
         const k10 = 0.119;
-        const k12 = 0.112;
-        const k21 = 0.055;
-        const k13 = 0.042;
-        const k31 = 0.0033;
-        const ke0 = 0.26; 
-
-        // Cálculos Clínicos (Concentración Jeringa = 10 mg/ml)
+        
         const boloInduccionMg = target * v1;
         const clearance = v1 * k10;
         const mantMgMin = target * clearance; 
-        const mantMlHr = (mantMgMin * 60) / 10;
+        const mantMlHr = (mantMgMin * 60) / 10; // Asumiendo propofol 1% (10mg/ml)
 
-        // Variables de estado
-        let x1 = boloInduccionMg; 
-        let x2 = 0, x3 = 0, ce = 0;
-
-        const timeLabels = [];
-        const cpData = [];
-        const ceData = [];
-
-        // Simulación de 30 minutos
-        for (let t = 0; t <= 30; t++) {
-            timeLabels.push(t);
-            let cpActual = x1 / v1; 
-            cpData.push(cpActual.toFixed(2));
-            ceData.push(ce.toFixed(2));
-
-            // Sub-pasos de precisión y adición de la infusión continua
-            for (let step = 0; step < 10; step++) {
-                let cp_dt = x1 / v1;
-                // A la transferencia de masa le sumamos los mg/min que entran por la bomba
-                let dx1 = -(k10 + k12 + k13) * x1 + k21 * x2 + k31 * x3 + mantMgMin;
-                let dx2 = k12 * x1 - k21 * x2;
-                let dx3 = k13 * x1 - k31 * x3;
-                let dce = ke0 * (cp_dt - ce);
-
-                x1 += dx1 * 0.1;
-                x2 += dx2 * 0.1;
-                x3 += dx3 * 0.1;
-                ce += dce * 0.1;
-            }
-        }
-
-      // Actualizar gráfica 
-        tivaChart.data.labels = timeLabels;
-        tivaChart.data.datasets[0].data = cpData;
-        tivaChart.data.datasets[1].data = ceData;
-        tivaChart.update();
-        
-        // Mostrar resultados en el panel de la gráfica
-        const resTciContainer = document.getElementById('res-tci-container');
-        const resTciBolo = document.getElementById('res-tci-bolo');
-        const resTciMant = document.getElementById('res-tci-mant');
-        
         resTciBolo.innerText = `${boloInduccionMg.toFixed(1)} mg`;
         resTciMant.innerText = `${mantMlHr.toFixed(1)} ml/hr`;
-        resTciContainer.style.display = 'block';
         
+        // --- 2. CAMBIO DE INTERFAZ A MODO "EN VIVO" ---
+        liveDashboard.style.display = 'block';
+        btnSimular.style.display = 'none';
+        btnDetener.style.display = 'block';
+        isInfusing = true;
+        
+        // Deshabilitar inputs para evitar cambios accidentales (Estructura de seguridad)
+        inputPeso.disabled = true;
+        targetInput.disabled = true;
+
+        // --- 3. INICIAR CRONÓMETRO Y ALERTAS ---
+        segundosTranscurridos = 0;
+        tivaTimer.innerText = "00:00:00";
+        tivaStatus.innerHTML = "🟢 Inducción: Administrar Bolo";
+        tivaStatus.style.backgroundColor = "#22c55e"; // Verde
+
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            segundosTranscurridos++;
+            tivaTimer.innerText = formatearTiempo(segundosTranscurridos);
+
+            // Estructura de Alertas Interactivas (Ejemplo temporal)
+            if (segundosTranscurridos === 60) {
+                tivaStatus.innerHTML = "🟡 Fase de Distribución (1 min)";
+                tivaStatus.style.backgroundColor = "#eab308"; // Amarillo
+            }
+            if (segundosTranscurridos === 300) {
+                tivaStatus.innerHTML = "🔵 Mantenimiento Estable (5 min)";
+                tivaStatus.style.backgroundColor = "#3b82f6"; // Azul
+            }
+            
+            // Aquí en el futuro enlazaremos el avance de la línea en la gráfica
+        }, 1000); // Se ejecuta cada 1000 ms (1 segundo)
+
     } else {
-        alert("Modelo en desarrollo. Prueba con Propofol - Marsh por ahora.");
+        alert("Selecciona Propofol - Marsh para esta prueba.");
+    }
+});
+
+// Detener el Caso
+btnDetener.addEventListener('click', () => {
+    if(confirm("¿Estás seguro de detener la infusión de este caso?")) {
+        clearInterval(timerInterval);
+        isInfusing = false;
+        
+        // Restaurar Interfaz
+        liveDashboard.style.display = 'none';
+        btnSimular.style.display = 'block';
+        btnDetener.style.display = 'none';
+        
+        // Rehabilitar inputs
+        inputPeso.disabled = false;
+        const targetInput = document.getElementById('target-tci');
+        if(targetInput) targetInput.disabled = false;
+        
+        // Borrar gráfica (estructuralmente, luego la vaciaremos real)
+        alert("Caso finalizado. Duración total: " + formatearTiempo(segundosTranscurridos));
     }
 });
