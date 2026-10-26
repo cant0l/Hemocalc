@@ -130,12 +130,24 @@
                 <div id="res-velocidad" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); margin: 10px 0;">0.0 ml/hr</div>
             </div>
 
-            <!-- TARJETA 3: Gráfica PK/PD (Simulador TCI) -->
+<!-- TARJETA 3: Gráfica PK/PD (Simulador TCI) -->
             <div class="calc-card result-section" id="tarjeta-grafica" style="padding-bottom: 30px;">
                 <h3>Simulador Plasmático / Efecto</h3>
+                
+                <!-- Caja de Resultados TCI (Oculta por defecto) -->
+                <div id="res-tci-container" style="display: none; margin-top: 15px; padding: 15px; border-radius: 8px; background-color: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-color); text-align: center;">
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Bolo de Inducción</div>
+                    <div id="res-tci-bolo" style="font-size: 1.8rem; font-weight: 700; color: #ef4444; margin-bottom: 15px;">0.0 mg</div>
+                    
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Mantenimiento Continuo</div>
+                    <div id="res-tci-mant" style="font-size: 1.8rem; font-weight: 700; color: #3b82f6;">0.0 ml/hr</div>
+                </div>
+
+                <!-- Lienzo de la gráfica -->
                 <div style="position: relative; height: 300px; width: 100%; margin-top: 15px;">
                     <canvas id="graficaTiva"></canvas>
                 </div>
+                
                 <button id="btn-simular" class="btn-primary" style="margin-top: 20px;">▶ Iniciar Simulación</button>
             </div>
 
