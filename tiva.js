@@ -23,6 +23,7 @@ if (themeBtn) {
 }
 
 // --- 1. REFERENCIAS DEL DOM ---
+const grupoTargetTCI = document.getElementById('grupo-target-tci');
 const farmaSelect = document.getElementById('farma-select');
 const modeloSelect = document.getElementById('modelo-select');
 const grupoModelo = document.getElementById('grupo-modelo');
@@ -62,6 +63,7 @@ function actualizarInterfazFarmaco() {
     const farma = farmaSelect.value;
     
     if (modelosTCI[farma]) {
+        grupoTargetTCI.style.display = 'flex';
         // MODO TCI
         grupoModelo.style.display = 'block';
         grupoLineal.style.display = 'none';
@@ -78,6 +80,7 @@ function actualizarInterfazFarmaco() {
         });
         ajustarCamposBiometricos();
     } else {
+        grupoTargetTCI.style.display = 'none';
         // MODO INFUSIÓN LINEAL
         grupoModelo.style.display = 'none';
         grupoLineal.style.display = 'block';
@@ -178,55 +181,57 @@ let tivaChart = new Chart(ctx, {
 });
 
 // --- 6. MOTOR FARMACOCINÉTICO (PK/PD) ---
+// --- 6. MOTOR FARMACOCINÉTICO (PK/PD) ---
 document.getElementById('btn-simular').addEventListener('click', () => {
     const farma = farmaSelect.value;
     const modelo = modeloSelect.value;
     const peso = parseFloat(inputPeso.value);
+    const targetInput = document.getElementById('target-tci');
+    const target = parseFloat(targetInput ? targetInput.value : 0);
 
-    if (!peso || peso <= 0) {
-        alert("Por favor, ingresa el peso del paciente.");
+    if (!peso || peso <= 0 || !target || target <= 0) {
+        alert("Por favor, ingresa el peso y una Concentración Target válida.");
         return;
     }
 
     if (farma === 'propofol' && modelo === 'marsh') {
-        // 1. Constantes Farmacocinéticas del Modelo de Marsh
+        // Constantes Marsh
         const v1 = 0.228 * peso;
         const v2 = 0.463 * peso;
         const v3 = 2.893 * peso;
-        
         const k10 = 0.119;
         const k12 = 0.112;
         const k21 = 0.055;
         const k13 = 0.042;
         const k31 = 0.0033;
-        const ke0 = 0.26; // Constante de sitio efecto (kEO)
+        const ke0 = 0.26; 
 
-        // 2. Escenario Clínico: Bolo de inducción de 2 mg/kg
-        const dosisBoloMg = 2 * peso; 
-        
-        // Variables de estado (cantidad de fármaco en mg por compartimento)
-        let x1 = dosisBoloMg; // Todo entra al compartimento central (V1)
+        // Cálculos Clínicos (Concentración Jeringa = 10 mg/ml)
+        const boloInduccionMg = target * v1;
+        const clearance = v1 * k10;
+        const mantMgMin = target * clearance; 
+        const mantMlHr = (mantMgMin * 60) / 10;
+
+        // Variables de estado
+        let x1 = boloInduccionMg; 
         let x2 = 0, x3 = 0, ce = 0;
 
         const timeLabels = [];
         const cpData = [];
         const ceData = [];
 
-        // 3. Simulación de 30 minutos con el Método de Euler
+        // Simulación de 30 minutos
         for (let t = 0; t <= 30; t++) {
             timeLabels.push(t);
-            
-            // Guardar la concentración actual para la gráfica
             let cpActual = x1 / v1; 
             cpData.push(cpActual.toFixed(2));
             ceData.push(ce.toFixed(2));
 
-            // Sub-pasos de 0.1 min para precisión matemática en la curva
+            // Sub-pasos de precisión y adición de la infusión continua
             for (let step = 0; step < 10; step++) {
                 let cp_dt = x1 / v1;
-                
-                // Ecuaciones diferenciales de transferencia de masa
-                let dx1 = -(k10 + k12 + k13) * x1 + k21 * x2 + k31 * x3;
+                // A la transferencia de masa le sumamos los mg/min que entran por la bomba
+                let dx1 = -(k10 + k12 + k13) * x1 + k21 * x2 + k31 * x3 + mantMgMin;
                 let dx2 = k12 * x1 - k21 * x2;
                 let dx3 = k13 * x1 - k31 * x3;
                 let dce = ke0 * (cp_dt - ce);
@@ -238,13 +243,17 @@ document.getElementById('btn-simular').addEventListener('click', () => {
             }
         }
 
-        // 4. Inyectar datos a la gráfica animada
+        // Actualizar gráfica y mostrar resultados
         tivaChart.data.labels = timeLabels;
         tivaChart.data.datasets[0].data = cpData;
         tivaChart.data.datasets[1].data = ceData;
         tivaChart.update();
         
+        // Inyectar el resultado al cuadro de texto superior
+        const resultDiv = document.querySelector('.calc-header p');
+        resultDiv.innerHTML = `<span style="color:#ef4444; font-weight:bold;">Bolo: ${boloInduccionMg.toFixed(1)} mg</span> | <span style="color:#3b82f6; font-weight:bold;">Mantener: ${mantMlHr.toFixed(1)} ml/hr</span>`;
+        
     } else {
-        alert("El motor matemático actualmente solo está activo para Propofol - Modelo Marsh. ¡Pronto agregaremos los demás!");
+        alert("Modelo en desarrollo. Prueba con Propofol - Marsh por ahora.");
     }
 });
