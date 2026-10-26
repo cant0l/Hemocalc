@@ -181,7 +181,6 @@ let tivaChart = new Chart(ctx, {
 });
 
 // --- 6. MOTOR FARMACOCINÉTICO (PK/PD) ---
-// --- 6. MOTOR FARMACOCINÉTICO (PK/PD) ---
 document.getElementById('btn-simular').addEventListener('click', () => {
     const farma = farmaSelect.value;
     const modelo = modeloSelect.value;
@@ -243,15 +242,20 @@ document.getElementById('btn-simular').addEventListener('click', () => {
             }
         }
 
-        // Actualizar gráfica y mostrar resultados
+      // Actualizar gráfica 
         tivaChart.data.labels = timeLabels;
         tivaChart.data.datasets[0].data = cpData;
         tivaChart.data.datasets[1].data = ceData;
         tivaChart.update();
         
-        // Inyectar el resultado al cuadro de texto superior
-        const resultDiv = document.querySelector('.calc-header p');
-        resultDiv.innerHTML = `<span style="color:#ef4444; font-weight:bold;">Bolo: ${boloInduccionMg.toFixed(1)} mg</span> | <span style="color:#3b82f6; font-weight:bold;">Mantener: ${mantMlHr.toFixed(1)} ml/hr</span>`;
+        // Mostrar resultados en el panel de la gráfica
+        const resTciContainer = document.getElementById('res-tci-container');
+        const resTciBolo = document.getElementById('res-tci-bolo');
+        const resTciMant = document.getElementById('res-tci-mant');
+        
+        resTciBolo.innerText = `${boloInduccionMg.toFixed(1)} mg`;
+        resTciMant.innerText = `${mantMlHr.toFixed(1)} ml/hr`;
+        resTciContainer.style.display = 'block';
         
     } else {
         alert("Modelo en desarrollo. Prueba con Propofol - Marsh por ahora.");
