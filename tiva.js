@@ -177,9 +177,74 @@ let tivaChart = new Chart(ctx, {
     }
 });
 
+// --- 6. MOTOR FARMACOCINÉTICO (PK/PD) ---
 document.getElementById('btn-simular').addEventListener('click', () => {
-    alert("Cálculo TCI en desarrollo...");
-});
+    const farma = farmaSelect.value;
+    const modelo = modeloSelect.value;
+    const peso = parseFloat(inputPeso.value);
 
-// Ejecutar al iniciar
-actualizarInterfazFarmaco();
+    if (!peso || peso <= 0) {
+        alert("Por favor, ingresa el peso del paciente.");
+        return;
+    }
+
+    if (farma === 'propofol' && modelo === 'marsh') {
+        // 1. Constantes Farmacocinéticas del Modelo de Marsh
+        const v1 = 0.228 * peso;
+        const v2 = 0.463 * peso;
+        const v3 = 2.893 * peso;
+        
+        const k10 = 0.119;
+        const k12 = 0.112;
+        const k21 = 0.055;
+        const k13 = 0.042;
+        const k31 = 0.0033;
+        const ke0 = 0.26; // Constante de sitio efecto (kEO)
+
+        // 2. Escenario Clínico: Bolo de inducción de 2 mg/kg
+        const dosisBoloMg = 2 * peso; 
+        
+        // Variables de estado (cantidad de fármaco en mg por compartimento)
+        let x1 = dosisBoloMg; // Todo entra al compartimento central (V1)
+        let x2 = 0, x3 = 0, ce = 0;
+
+        const timeLabels = [];
+        const cpData = [];
+        const ceData = [];
+
+        // 3. Simulación de 30 minutos con el Método de Euler
+        for (let t = 0; t <= 30; t++) {
+            timeLabels.push(t);
+            
+            // Guardar la concentración actual para la gráfica
+            let cpActual = x1 / v1; 
+            cpData.push(cpActual.toFixed(2));
+            ceData.push(ce.toFixed(2));
+
+            // Sub-pasos de 0.1 min para precisión matemática en la curva
+            for (let step = 0; step < 10; step++) {
+                let cp_dt = x1 / v1;
+                
+                // Ecuaciones diferenciales de transferencia de masa
+                let dx1 = -(k10 + k12 + k13) * x1 + k21 * x2 + k31 * x3;
+                let dx2 = k12 * x1 - k21 * x2;
+                let dx3 = k13 * x1 - k31 * x3;
+                let dce = ke0 * (cp_dt - ce);
+
+                x1 += dx1 * 0.1;
+                x2 += dx2 * 0.1;
+                x3 += dx3 * 0.1;
+                ce += dce * 0.1;
+            }
+        }
+
+        // 4. Inyectar datos a la gráfica animada
+        tivaChart.data.labels = timeLabels;
+        tivaChart.data.datasets[0].data = cpData;
+        tivaChart.data.datasets[1].data = ceData;
+        tivaChart.update();
+        
+    } else {
+        alert("El motor matemático actualmente solo está activo para Propofol - Modelo Marsh. ¡Pronto agregaremos los demás!");
+    }
+});
